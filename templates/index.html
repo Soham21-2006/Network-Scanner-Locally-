@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NetScan — Network Discovery</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/static/css/style.css" />
+  <script src="/static/js/vendor/socket.io.min.js"></script>
+</head>
+<body>
+
+<!-- ============ SIDEBAR ============ -->
+<aside class="sidebar">
+  <div class="brand">
+    <div class="brand-icon">N</div>
+    <div>
+      <div class="brand-name">NetScan</div>
+      <div class="brand-sub">Network Discovery</div>
+    </div>
+  </div>
+
+  <nav class="nav">
+    <a href="#" class="nav-item active"><span>▦</span> Dashboard</a>
+    <a href="#" class="nav-item"><span>◔</span> History</a>
+    <a href="#" class="nav-item"><span>⚙</span> Settings</a>
+    <a href="#" class="nav-item"><span>?</span> Help</a>
+  </nav>
+
+  <div class="sidebar-footer">
+    <button id="themeToggle" class="theme-btn">
+      <span class="theme-icon">☀</span>
+      <span class="theme-label">Light mode</span>
+    </button>
+  </div>
+</aside>
+
+<!-- ============ MAIN ============ -->
+<main class="main">
+
+  <header class="topbar">
+    <div>
+      <h1>Network Scanner</h1>
+      <p class="subtitle">Discover live hosts and services on your LAN</p>
+    </div>
+    <span class="status-pill" id="statusPill">
+      <span class="dot"></span> Idle
+    </span>
+  </header>
+
+  <!-- Config -->
+  <section class="card">
+    <div class="card-header"><h2>Scan Configuration</h2></div>
+    <div class="card-body">
+      <div class="form-grid">
+        <div class="field">
+          <label for="target">Target Range</label>
+          <input id="target" type="text" value="192.168.1.0/24" />
+          <span class="hint">CIDR or single IP</span>
+        </div>
+        <div class="field">
+          <label for="ports">Port Range</label>
+          <input id="ports" type="text" value="1-1024" />
+          <span class="hint">1-1024 or 80,443,8080</span>
+        </div>
+        <div class="field">
+          <label for="scanType">Scan Type</label>
+          <select id="scanType">
+            <option value="connect">TCP Connect (fast)</option>
+            <option value="syn">TCP SYN (stealth)</option>
+          </select>
+          <span class="hint">SYN requires root</span>
+        </div>
+        <div class="field field-buttons">
+          <button id="startBtn" class="btn btn-primary">
+            <span id="btnSpinner" class="spinner hidden"></span>
+            <span id="btnLabel">Start Scan</span>
+          </button>
+          <button id="exportBtn" class="btn btn-ghost" disabled>Export</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <section class="stats-row">
+    <div class="stat-card">
+      <div class="stat-icon blue">◉</div>
+      <div><div class="stat-value" id="statHosts">0</div>
+        <div class="stat-label">Live Hosts</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon green">⚡</div>
+      <div><div class="stat-value" id="statPorts">0</div>
+        <div class="stat-label">Open Ports</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon purple">◆</div>
+      <div><div class="stat-value" id="statServices">0</div>
+        <div class="stat-label">Services Found</div></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon orange">⏱</div>
+      <div><div class="stat-value" id="statTime">0.0s</div>
+        <div class="stat-label">Elapsed</div></div>
+    </div>
+  </section>
+
+  <!-- Progress -->
+  <section id="progressCard" class="card hidden">
+    <div class="progress-wrap">
+      <div class="progress-info">
+        <span id="progressLabel">Scanning…</span>
+        <span id="progressPct">0%</span>
+      </div>
+      <div class="progress-bar"><div id="progressFill"></div></div>
+    </div>
+  </section>
+
+  <!-- Results -->
+  <section class="card">
+    <div class="card-header results-header">
+      <div>
+        <h2>Discovered Hosts</h2>
+        <span class="card-sub" id="resultsSub">Run a scan to see results</span>
+      </div>
+      <div class="results-tools">
+        <input id="filterInput" type="text" placeholder="Filter by IP, MAC, port…" class="filter-input" />
+      </div>
+    </div>
+    <div class="card-body" id="results">
+      <div class="empty-state">
+        <div class="empty-icon">🛰️</div>
+        <p>No scan has been run yet.</p>
+        <span>Configure a target range above and click <b>Start Scan</b>.</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="footer">
+    NetScan — For authorized network testing only.
+  </footer>
+</main>
+
+<div id="toasts" class="toasts"></div>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
